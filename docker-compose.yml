@@ -1,0 +1,29 @@
+version: "3"
+services:
+  haproxy:
+    build:
+      context: .
+      dockerfile: haproxy.dockerfile
+    container_name: haproxy
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.10
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:8080"
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.20
+
+networks:
+  mynetwork:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
