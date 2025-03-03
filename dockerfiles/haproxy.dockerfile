@@ -1,4 +1,4 @@
-FROM haproxy:2.4
+FROM haproxy:2.3
 
 # Atualiza os pacotes e instala o Certbot
 RUN apt-get update && apt-get install -y --no-install-recommends \
