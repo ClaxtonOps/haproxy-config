@@ -1,7 +1,14 @@
-FROM haproxy:2.4
+FROM debian:bullseye-slim
 
-COPY ./haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+# Atualiza os pacotes e instala o HAProxy
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    haproxy curl wget vim \
+    && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 80
+# Cria o diretório de configuração
 
-#docker compose run --rm certbot certonly --webroot -w /var/www/certbot -d claxtonopslab.cloud --non-interactive --agree-tos --email paulo.odbcontato@gmail.com
+# Expõe as portas 80 e 443
+EXPOSE 80 443
+
+# Define o comando de entrada
+CMD ["haproxy", "-f", "/etc/haproxy/haproxy.cfg"]
