@@ -5,8 +5,8 @@ services:
       context: ./dockerfiles
       dockerfile: haproxy.dockerfile
     container_name: haproxy
-    volumes:
-      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+   # volumes:
+   #   - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
       - "80:80"
       - "443:443"
