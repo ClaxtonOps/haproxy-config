@@ -1,14 +1,30 @@
-FROM debian:bullseye-slim
+FROM haproxy:2.4
 
-# Atualiza os pacotes e instala o HAProxy
+# Atualiza os pacotes e instala o Certbot
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    haproxy curl wget vim \
+    certbot curl wget vim \
     && rm -rf /var/lib/apt/lists/*
 
-# Cria o diretório de configuração
+# Criar diretório para os certificados
+RUN mkdir -p /usr/local/etc/haproxy/ssl
 
-# Expõe as portas 80 e 443
+# Gerar o certificado com o Certbot
+RUN certbot certonly \
+    --standalone \
+    --keep-until-expiring \
+    --http-01-port 80 \
+    --non-interactive \
+    --agree-tos \
+    --email paulo.odbcontato@gmail.com \
+    -d claxtonopslab.cloud 
+
+# Concatenar fullchain.pem + privkey.pem e criar haproxy.pem
+RUN cat /etc/letsencrypt/live/claxtonopslab.cloud/fullchain.pem \
+        /etc/letsencrypt/live/claxtonopslab.cloud/privkey.pem \
+        > /usr/local/etc/haproxy/ssl/haproxy.pem
+
+# Definir permissões seguras para o arquivo do certificado
+RUN chmod 600 /usr/local/etc/haproxy/ssl/haproxy.pem
+
+CMD ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
 EXPOSE 80 443
-
-# Define o comando de entrada
-CMD ["haproxy", "-f", "/etc/haproxy/haproxy.cfg"]
