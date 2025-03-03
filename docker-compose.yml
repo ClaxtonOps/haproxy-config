@@ -1,17 +1,37 @@
 version: "3"
 services:
   haproxy:
-    image: haproxy:2.3
+    build:
+      context: .
+      dockerfile: haproxy.dockerfile
     container_name: haproxy
     volumes:
       - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
       - "80:80"
       - "443:443"
+    depends_on:
+      - certbot
     restart: always
     networks:
       mynetwork:
         ipv4_address: 192.168.100.10
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certs:/etc/letsencrypt
+    entrypoint: >
+      sh -c "certbot certonly --standalone -d claxtonopslab.cloud
+      --http-01-port=80 --non-interactive --agree-tos 
+      --email paulo.odbcontato@gmail.com.com && 
+      cat /etc/letsencrypt/live/claxtonopslab.cloud/fullchain.pem 
+      /etc/letsencrypt/live/claxtonopslab.cloud/privkey.pem 
+      > /etc/letsencrypt/live/claxtonopslab.cloud/haproxy.pem"
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.60
 
   app1:
     build:
@@ -21,6 +41,8 @@ services:
     ports:
       - "8181:80"
     restart: always
+    depends_on:
+      - certbot
     networks:
       mynetwork:
         ipv4_address: 192.168.100.20
@@ -33,6 +55,8 @@ services:
     ports:
       - "8282:80"
     restart: always
+    depends_on:
+      - certbot
     networks:
       mynetwork:
         ipv4_address: 192.168.100.30
@@ -45,6 +69,8 @@ services:
     ports:
       - "8383:80"
     restart: always
+    depends_on:
+      - certbot
     networks:
       mynetwork:
         ipv4_address: 192.168.100.40
@@ -57,6 +83,8 @@ services:
     ports:
       - "8484:80"
     restart: always
+    depends_on:
+      - certbot
     networks:
       mynetwork:
         ipv4_address: 192.168.100.50
