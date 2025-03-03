@@ -1,25 +1,65 @@
 version: "3"
 services:
   haproxy:
-    build:
-      context: .
-      dockerfile: haproxy.dockerfile
+    image: haproxy:2.3
     container_name: haproxy
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
       - "80:80"
       - "443:443"
+    restart: always
     networks:
       mynetwork:
         ipv4_address: 192.168.100.10
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx
+  app1:
+    build:
+      context: .
+      dockerfile: 1.dockerfile
+    container_name: nginx1
     ports:
-      - "8080:8080"
+      - "8181:80"
+    restart: always
     networks:
       mynetwork:
         ipv4_address: 192.168.100.20
+
+  app2:
+    build:
+      context: .
+      dockerfile: 2.dockerfile
+    container_name: nginx2
+    ports:
+      - "8282:80"
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.30
+
+  app3:
+    build:
+      context: .
+      dockerfile: 3.dockerfile
+    container_name: nginx3
+    ports:
+      - "8383:80"
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.40
+
+  app4:
+    build:
+      context: .
+      dockerfile: 4.dockerfile    
+    container_name: nginx4
+    ports:
+      - "8484:80"
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.50
 
 networks:
   mynetwork:
