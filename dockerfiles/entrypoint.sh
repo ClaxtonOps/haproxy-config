@@ -2,7 +2,7 @@
 set -e  # Faz o script falhar se qualquer comando falhar
 
 # Inicia o HAProxy em segundo plano
-haproxy -f /usr/local/etc/haproxy/haproxy.cfg &
+haproxy -f /usr/local/etc/haproxy/haproxy-dev.cfg &
 HAPROXY_PID=$!
 
 # Aguarda o HAProxy ficar pronto
@@ -33,4 +33,4 @@ else
 fi
 
 # Faz reload seguro do HAProxy
-haproxy -sf "$HAPROXY_PID"
+haproxy -f /usr/local/etc/haproxy/haproxy.cfg -sf "$HAPROXY_PID"
