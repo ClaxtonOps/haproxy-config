@@ -1,21 +1,28 @@
 version: "3"
 services:
   haproxy:
-    build:
-      context: ./dockerfiles
-      dockerfile: haproxy.dockerfile
+    image: custom-haproxy
     container_name: haproxy
-   # volumes:
-   #   - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    volumes:
+      - ./certs:/usr/local/etc/haproxy/ssl
     ports:
       - "80:80"
       - "443:443"
-    restart: always
+    depends_on:
+     - certbot
     networks:
       mynetwork:
         ipv4_address: 192.168.100.10
 
-
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certs:/etc/letsencrypt
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.60
+  
   app1:
     build:
       context: ./dockerfiles
